@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vigha-service
+  namespace: dev
+  annotations:
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true" # Internal LoadBalancer
+spec:
+  type: LoadBalancer
+  #loadBalancerIP: 10.17.61.166
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: vigha
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vigha-deploy
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app: vigha
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vigha
+    spec:
+      containers:
+      - name: vigha
+        image: vigha.azurecr.io/vighadev:94-1 
+        ports:
+        - containerPort: 8080
